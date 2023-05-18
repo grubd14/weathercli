@@ -5,8 +5,8 @@ Future<void> printWeatherInfo() async {
   final WeatherInfo weatherInfo;
   weatherInfo = await getWeatherJson();
 
-  print('Coordinates: ${weatherInfo.coordinates}');
-  print('Weather : ${weatherInfo.weather}');
+  print('Coordinates: ${weatherInfo.coordinates?.lat}');
+  print('Weather : ${weatherInfo.weather?[0].id}');
 }
 
 Future<WeatherInfo> getWeatherJson() async {
@@ -16,16 +16,16 @@ Future<WeatherInfo> getWeatherJson() async {
   final weatherInfo = await http.get(weatherApiUrl);
   final weatherJsonInfo = json.decode(weatherInfo.body) as Map<String, dynamic>;
 
-  return WeatherInfo.fromjson(weatherJsonInfo);
+  return WeatherInfo.fromJson(weatherJsonInfo);
 }
 
 class WeatherInfo {
-  final Coordinates coordinates;
-  final List<Weather> weather;
+  final Coordinates? coordinates;
+  final List<Weather>? weather;
   final String base;
   final int visibility;
   final Wind wind;
-  final Rain rain;
+  final Rain? rain;
   final Clouds clouds;
   final int timeDataCalculation;
   final SysData system;
@@ -50,21 +50,21 @@ class WeatherInfo {
     required this.cod,
   });
 
-  factory WeatherInfo.fromjson(Map<String, dynamic> json) {
+  factory WeatherInfo.fromJson(Map<String, dynamic>? json) {
     return WeatherInfo(
-      coordinates: Coordinates.fromjson(json['coord']),
-      weather: List<Weather>.from(json['weather']),
-      base: json['base'],
-      visibility: json['visibility'],
-      wind: Wind.fromJson(json['wind']),
-      rain: Rain.fromJson(json['rain']),
-      clouds: Clouds.fromJson(json['clouds']),
-      timeDataCalculation: json['dt'],
-      system: SysData.fromJson(json['sys']),
-      timezone: json['timezone'],
-      id: json['id'],
-      name: json['name'],
-      cod: json['cod'],
+      coordinates: Coordinates.fromJson(json?['coord']),
+      weather: (json?['weather'] as List<dynamic>).map((e) => Weather.fromJson(e as Map<String, dynamic>)).toList(),
+      base: json?['base'] as String,
+      visibility: json?['visibility'] as int,
+      wind: Wind.fromJson(json?['wind']),
+      rain: json?['rain'] != null ?  Rain.fromJson(json?['rain'] as Map<String, dynamic>): null,
+      clouds: Clouds.fromJson(json?['clouds']),
+      timeDataCalculation: json?['dt'] as int,
+      system: SysData.fromJson(json?['sys']),
+      timezone: json?['timezone'] as int,
+      id: json?['id'] as int,
+      name: json?['name'] as String,
+      cod: json?['cod'] as int,
     );
   }
 }
@@ -78,10 +78,10 @@ class Coordinates {
     required this.lat,
   });
 
-  factory Coordinates.fromjson(Map<String, dynamic> json) {
+  factory Coordinates.fromJson(Map<String, dynamic> json) {
     return Coordinates(
-      lon: json['lon'],
-      lat: json['lat'],
+      lon: json['lon'] as double,
+      lat: json['lat'] as double,
     );
   }
 }
@@ -101,10 +101,10 @@ class Weather {
 
   factory Weather.fromJson(Map<String, dynamic> json) {
     return Weather(
-      id: json['id'],
-      main: json['main'],
-      description: json['description'],
-      icon: json['icon'],
+      id: json['id'] as int,
+      main: json['main'] as String,
+      description: json['description'] as String,
+      icon: json['icon'] as String,
     );
   }
 }
@@ -128,18 +128,18 @@ class Maindata {
 
   factory Maindata.fromJson(Map<String, dynamic> json) {
     return Maindata(
-      temp: json['temp'],
-      feelsLike: json['feels_like'],
-      tempMin: json['temp_min'],
-      tempMax: json['temp_max'],
-      pressure: json['pressure'],
-      humidity: json['humidity'],
+      temp: json['temp'] as double,
+      feelsLike: json['feels_like'] as double,
+      tempMin: json['temp_min'] as double,
+      tempMax: json['temp_max'] as double,
+      pressure: json['pressure'] as int,
+      humidity: json['humidity'] as int,
     );
   }
 }
 
 class Wind {
-  final int speed;
+  final double speed;
   final int deg;
 
   Wind({
@@ -149,8 +149,8 @@ class Wind {
 
   factory Wind.fromJson(Map<String, dynamic> json) {
     return Wind(
-      speed: json['speed'],
-      deg: json['deg'],
+      speed: json['speed'] as double,
+      deg: json['deg'] as int,
     );
   }
 }
@@ -162,7 +162,7 @@ class Rain {
 
   factory Rain.fromJson(Map<String, dynamic> json) {
     return Rain(
-      oneHour: json['1h'],
+      oneHour: json['1h'] as double,
     );
   }
 }
@@ -174,7 +174,7 @@ class Clouds {
 
   factory Clouds.fromJson(Map<String, dynamic> json) {
     return Clouds(
-      all: json['all'],
+      all: json['all'] as int,
     );
   }
 }
@@ -196,11 +196,11 @@ class SysData {
 
   factory SysData.fromJson(Map<String, dynamic> json) {
     return SysData(
-      type: json['type'],
-      id: json['id'],
-      country: json['country'],
-      sunrise: json['sunrise'],
-      sunset: json['sunset'],
+      type: json['type'] as int,
+      id: json['id'] as int,
+      country: json['country'] as String,
+      sunrise: json['sunrise'] as int,
+      sunset: json['sunset'] as int,
     );
   }
 }
