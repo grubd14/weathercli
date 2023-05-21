@@ -1,12 +1,29 @@
 import 'dart:convert';
+import 'package:ansi_styles/ansi_styles.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> printWeatherInfo() async {
   final WeatherInfo weatherInfo;
   weatherInfo = await getWeatherJson();
 
-  print('Coordinates: ${weatherInfo.coordinates?.lat}');
-  print('Weather : ${weatherInfo.weather?[0].id}');
+  print(AnsiStyles.bold('Weather Information'));
+  print(AnsiStyles.green(
+      'Coordinates: Latitude: ${weatherInfo.coordinates?.lat}    Longitude: ${weatherInfo.coordinates?.lon}'));
+  print(AnsiStyles.yellow(
+      'Weather :\n    ID: ${weatherInfo.weather?[0].id}\n    Main: ${weatherInfo.weather?[0].main}\n    Description: ${weatherInfo.weather?[0].description}\n    Icon: ${weatherInfo.weather?[0].icon}'));
+  print(AnsiStyles.cyan('Base: ${weatherInfo.base} '));
+  print(AnsiStyles.greenBright('Visibility: ${weatherInfo.visibility}'));
+  print(AnsiStyles.magentaBright('Wind Speed:\n    ${weatherInfo.wind.speed}\n    ${weatherInfo.wind.deg}'));
+  print(AnsiStyles.green('Main Data:\n   Feels Like: ${weatherInfo.maindata.feelsLike}\n   Temperature: ${weatherInfo.maindata.temp}\n   Max Temp: ${weatherInfo.maindata.tempMax}\n   Min Temp: ${weatherInfo.maindata.tempMin}\n   Humidity: ${weatherInfo.maindata.humidity}\n   Pressure: ${weatherInfo.maindata.pressure}'));
+  print(AnsiStyles.redBright('Rain: ${weatherInfo.rain?.oneHour}'));
+  print(AnsiStyles.whiteBright('Clouds: ${weatherInfo.clouds.all}'));
+  print(AnsiStyles.yellowBright(
+      'Time Data Calculation: ${weatherInfo.timeDataCalculation}'));
+  print(AnsiStyles.blue('System Data:\n    ID: ${weatherInfo.system.id}\n    Country: ${weatherInfo.system.country}\n    Sunrise: ${weatherInfo.system.sunrise}\n    Sunset: ${weatherInfo.system.sunset}\n    Type: ${weatherInfo.system.type}'));
+  print(AnsiStyles.green('Time Zone: ${weatherInfo.timezone}'));
+  print(AnsiStyles.white('ID : ${weatherInfo.id}'));
+  print(AnsiStyles.gray('Name: ${weatherInfo.name}'));
+  print(AnsiStyles.cyanBright('COD: ${weatherInfo.cod}'));
 }
 
 Future<WeatherInfo> getWeatherJson() async {
@@ -25,6 +42,7 @@ class WeatherInfo {
   final String base;
   final int visibility;
   final Wind wind;
+  final Maindata maindata;
   final Rain? rain;
   final Clouds clouds;
   final int timeDataCalculation;
@@ -40,6 +58,7 @@ class WeatherInfo {
     required this.base,
     required this.visibility,
     required this.wind,
+    required this.maindata,
     required this.rain,
     required this.clouds,
     required this.timeDataCalculation,
@@ -53,11 +72,16 @@ class WeatherInfo {
   factory WeatherInfo.fromJson(Map<String, dynamic>? json) {
     return WeatherInfo(
       coordinates: Coordinates.fromJson(json?['coord']),
-      weather: (json?['weather'] as List<dynamic>).map((e) => Weather.fromJson(e as Map<String, dynamic>)).toList(),
+      weather: (json?['weather'] as List<dynamic>)
+          .map((e) => Weather.fromJson(e as Map<String, dynamic>))
+          .toList(),
       base: json?['base'] as String,
       visibility: json?['visibility'] as int,
       wind: Wind.fromJson(json?['wind']),
-      rain: json?['rain'] != null ?  Rain.fromJson(json?['rain'] as Map<String, dynamic>): null,
+      maindata: Maindata.fromJson(json?['main']),
+      rain: json?['rain'] != null
+          ? Rain.fromJson(json?['rain'] as Map<String, dynamic>)
+          : null,
       clouds: Clouds.fromJson(json?['clouds']),
       timeDataCalculation: json?['dt'] as int,
       system: SysData.fromJson(json?['sys']),
