@@ -1,5 +1,5 @@
-import 'package:weathercli/weathercli.dart';
+import 'package:weathercli/location_api.dart';
 
 void main() {
-  printWeatherInfo();
+  printLocationInfo();
 }
