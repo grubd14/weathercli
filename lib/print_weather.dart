@@ -1,3 +1,4 @@
+
 import 'package:ansi_styles/ansi_styles.dart';
 
 import 'weather_api.dart';
@@ -6,6 +7,7 @@ import 'weather_json.dart';
 Future<void> printWeatherInfo() async {
   final WeatherInfo weatherInfo;
   weatherInfo = await getWeatherJson();
+
 
   print(AnsiStyles.bold('Weather Information'));
   print('\n');
@@ -30,5 +32,3 @@ Future<void> printWeatherInfo() async {
   print(AnsiStyles.gray('Name: ${weatherInfo.name}'));
   print(AnsiStyles.cyanBright('COD: ${weatherInfo.cod}'));
 }
-
-
